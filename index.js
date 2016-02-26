@@ -36,7 +36,8 @@ module.exports = function (game) {
         game.control(physics);
 
         if (opts.animate) {
-            var leftArmBaseRotation = playerSkin.leftArm.rotation.z,
+            var oldTick = physics.tick,
+                leftArmBaseRotation = playerSkin.leftArm.rotation.z,
                 rightArmBaseRotation = playerSkin.rightArm.rotation.z,
                 leftLegBaseRotation = playerSkin.leftLeg.rotation.z,
                 rightLegBaseRotation = playerSkin.rightLeg.rotation.z,
@@ -45,6 +46,9 @@ module.exports = function (game) {
                 animationRunning = false,
                 animationShouldStop = false;
             physics.tick = function (dt) {
+                if (oldTick !== undefined) {
+                    oldTick.call(physics, dt);
+                }
                 if (!animationRunning) {
                     return;
                 }
