@@ -41,12 +41,12 @@ Return a new player from a image file src string `img`.
 `skinOpts` are an options object passed through to the [minecraft-skin](https://github.com/maxogden/minecraft-skin) module.
 `opts` are an options object used to control animation parameters:
 
-    * `animate`: Whether to animate the player object at all (default: true)
-    * `animationSpeed`: Time for one cycle of animation to complete, in seconds (default: 1 second)
-    * `animationAmount`: How far the body segments rotate, as a multiple of 180 degrees (default: 0.5 / 90 degrees)
-    * `legAmount`: How far the leg segments rotate, as a multiple of `animationAmount` (default: 1.0)
-    * `armAmount`: Similar, but for the arm segments (default: 1.0)
-    * `headAmount`: Also similar, but for the head segment (default: 0.25)
+* `animate`: Whether to animate the player object at all (default: true)
+* `animationSpeed`: Time for one cycle of animation to complete, in seconds (default: 1 second)
+* `animationAmount`: How far the body segments rotate, as a multiple of 180 degrees (default: 0.5 / 90 degrees)
+* `legAmount`: How far the leg segments rotate, as a multiple of `animationAmount` (default: 1.0)
+* `armAmount`: Similar, but for the arm segments (default: 1.0)
+* `headAmount`: Also similar, but for the head segment (default: 0.25)
 
 ## player.position.set(x, y, z)
 
