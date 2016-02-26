@@ -14,5 +14,7 @@ substack.possess();
 window.addEventListener('keydown', function (ev) {
     if (ev.keyCode === 'R'.charCodeAt(0)) {
         substack.toggle();
+    } else if (ev.keyCode === 'T'.charCodeAt(0)) {
+        substack.toggleAnimation();
     }
 });
