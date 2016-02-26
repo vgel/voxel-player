@@ -13,16 +13,23 @@ var game = createGame({
 window.game = game;
 game.appendTo('#container');
 
-var createPlayer = require('voxel-player')(game);
+var createPlayer = require('../')(game);
 var substack = createPlayer('substack.png');
+substack.position.y = 1000;
 substack.possess();
 
 window.addEventListener('keydown', function (ev) {
     if (ev.keyCode === 'R'.charCodeAt(0)) {
         substack.toggle();
+    } else if (ev.keyCode === 'T'.charCodeAt(0)) {
+        substack.toggleAnimation();
     }
 });
 ```
+
+# running the example
+
+Create a `node_modules/` folder in the root of the `voxel-player/` directory, and use npm to install the dependencies. Assuming you've installed browserify globally, run `browserify main.js > static/bundle.js` in the `example/` directory, then run `node server.js` and visit `localhost:8085` in your browser. If you're using Chrome, make sure to clear cache after making any modifications to prevent it from caching `bundle.js`.
 
 # methods
 
@@ -77,6 +84,18 @@ Toggle the player pov between 1st and 3rd.
 ## player.possess()
 
 Set the player as the active camera view.
+
+## player.startAnimation()
+
+Starts the player walking animation. Does nothing if animation is disabled.
+
+## player.stopAnimation()
+
+Gracefully stops the player walking animation, by letting it run to completion. Does nothing if animation is disabled.
+
+## player.toggleAnimation()
+
+Depending on the current animation state, either starts or stops the animation. Does nothing if animation is disabled.
 
 # install
 
