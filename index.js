@@ -4,9 +4,19 @@ module.exports = function (game) {
     var mountPoint;
     var possessed;
     
-    return function (img, skinOpts) {
+    return function (img, skinOpts, opts) {
         if (!skinOpts) {
           skinOpts = {};
+        }
+        if (!opts) {
+            opts = {animate: true};
+        }
+        if (opts.animate) {
+            opts.animationSpeed = opts.animationSpeed !== undefined ? opts.animationSpeed : 1.0; // time for 1 cycle of animation, seconds
+            opts.animationAmount = opts.animationAmount !== undefined ? opts.animationAmount : 0.5; // amount of rotation, 1.0 = 180 deg
+            opts.legAmount = opts.legAmount !== undefined ? opts.legAmount : 1.0; // leg amount as multiple of overall animation amount
+            opts.armAmount = opts.armAmount !== undefined ? opts.armAmount : 1.0; // arm amount as multiple of overall animation amount
+            opts.headAmount = opts.headAmount !== undefined ? opts.headAmount : 0.25; // head amount as multiple of overall animation amount
         }
         skinOpts.scale = skinOpts.scale || new game.THREE.Vector3(0.04, 0.04, 0.04);
         var playerSkin = skin(game.THREE, img, skinOpts);
@@ -24,6 +34,24 @@ module.exports = function (game) {
         physics.blocksCreation = true;
         
         game.control(physics);
+
+        if (opts.animate) {
+            var leftArmBaseRotation = playerSkin.leftArm.rotation.z,
+                rightArmBaseRotation = playerSkin.rightArm.rotation.z,
+                leftLegBaseRotation = playerSkin.leftLeg.rotation.z,
+                rightLegBaseRotation = playerSkin.rightLeg.rotation.z,
+                headBaseRotation = playerSkin.head.rotation.z,
+                timeInCycle = 0.0;
+            physics.tick = function (dt) {
+                timeInCycle = (timeInCycle + dt / 1000) % opts.animationSpeed;
+                var rotation = Math.sin(timeInCycle / opts.animationSpeed * 2 * Math.PI) * Math.PI * opts.animationAmount;
+                playerSkin.leftArm.rotation.z = leftArmBaseRotation + rotation * opts.armAmount;
+                playerSkin.rightArm.rotation.z = rightArmBaseRotation - rotation * opts.armAmount;
+                playerSkin.leftLeg.rotation.z = leftLegBaseRotation - rotation * opts.legAmount;
+                playerSkin.rightLeg.rotation.z = rightLegBaseRotation + rotation * opts.legAmount;
+                playerSkin.head.rotation.z = headBaseRotation + rotation * opts.headAmount;
+            }
+        }
         
         physics.move = function (x, y, z) {
             var xyz = parseXYZ(x, y, z);
