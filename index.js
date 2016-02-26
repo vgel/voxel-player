@@ -41,16 +41,48 @@ module.exports = function (game) {
                 leftLegBaseRotation = playerSkin.leftLeg.rotation.z,
                 rightLegBaseRotation = playerSkin.rightLeg.rotation.z,
                 headBaseRotation = playerSkin.head.rotation.z,
-                timeInCycle = 0.0;
+                timeInCycle = 0.0,
+                animationRunning = false,
+                animationShouldStop = false;
             physics.tick = function (dt) {
+                if (!animationRunning) {
+                    return;
+                }
+                var prevRotation = calculateRotation(timeInCycle, opts.animationSpeed, opts.animationAmount);
                 timeInCycle = (timeInCycle + dt / 1000) % opts.animationSpeed;
-                var rotation = Math.sin(timeInCycle / opts.animationSpeed * 2 * Math.PI) * Math.PI * opts.animationAmount;
+                var rotation = calculateRotation(timeInCycle, opts.animationSpeed, opts.animationAmount);
+                if (animationShouldStop && (rotation === 0 || Math.sign(prevRotation) !== Math.sign(rotation))) {
+                    // crossing over 0, good place to stop
+                    rotation = 0;
+                    animationShouldStop = false;
+                    animationRunning = false;
+                }
                 playerSkin.leftArm.rotation.z = leftArmBaseRotation + rotation * opts.armAmount;
                 playerSkin.rightArm.rotation.z = rightArmBaseRotation - rotation * opts.armAmount;
                 playerSkin.leftLeg.rotation.z = leftLegBaseRotation - rotation * opts.legAmount;
                 playerSkin.rightLeg.rotation.z = rightLegBaseRotation + rotation * opts.legAmount;
                 playerSkin.head.rotation.z = headBaseRotation + rotation * opts.headAmount;
             }
+
+            physics.startAnimation = function () {
+                animationRunning = true;
+                animationShouldStop = false;
+                timeInCycle = 0.0;
+            }
+
+            physics.stopAnimation = function () {
+                animationShouldStop = true;
+            }
+
+            physics.toggleAnimation = function () {
+                if (animationRunning) {
+                    physics.stopAnimation();
+                } else {
+                    physics.startAnimation();
+                }
+            }
+        } else {
+            physics.startAnimation = physics.stopAnimation = physics.toggleAnimation = function () {};
         }
         
         physics.move = function (x, y, z) {
@@ -94,6 +126,10 @@ module.exports = function (game) {
         return physics;
     }
 };
+
+function calculateRotation(cycleTime, animationSpeed, animationAmount) {
+    return Math.sin(cycleTime / animationSpeed * 2 * Math.PI) * Math.PI * animationAmount;
+}
 
 function parseXYZ (x, y, z) {
     if (typeof x === 'object' && Array.isArray(x)) {
